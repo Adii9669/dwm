@@ -1,5 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-#include "/home/milo/suckless/dwm/themes/darkblue.h"
+#include "/home/milo/suckless/dwm/themes/ocean.h"
 /* appearance */
 static const unsigned int borderpx  = 2;        /* border pixel of windows */
 static const unsigned int gappx     = 2;        /* gaps between windows */
@@ -60,13 +60,13 @@ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont,
 static const char *termcmd[]  = { "kitty", NULL };
 static const char *brave[] = { "brave", NULL };
 static const char *firefox[] = { "firefox", NULL };
-static const char *rofim[] = { "rofi" , "-show" , "drun" , NULL};
+//static const char *rofim[] = { "rofi" , "-show" , "drun" , NULL};
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_a,      togglebar,      {0} },
+	{ MODKEY,                       XK_r,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
@@ -75,7 +75,7 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY,                       XK_w,      killclient,     {0} },
+	{ MODKEY,                       XK_q,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY|ShiftMask,             XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
@@ -91,7 +91,6 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_equal,  setgaps,        {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_equal,  setgaps,        {.i = 0  } },
 	{ MODKEY, 			XK_b,  spawn,	         {.v = brave} },
-	{ MODKEY, 			XK_r,  spawn,	         {.v = rofim} },
 	{ MODKEY,    			XK_f,  spawn,	         {.v = firefox} },
 
 	TAGKEYS(                        XK_1,                      0)
