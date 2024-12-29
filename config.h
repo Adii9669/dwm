@@ -1,5 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-#include "/home/milo/suckless/dwm/themes/ocean.h"
+#include "/home/milo/suckless/dwm/themes/darkblue.h"
 /* appearance */
 static const unsigned int borderpx = 2; /* border pixel of windows */
 static const unsigned int gappx = 2;    /* gaps between windows */
@@ -17,7 +17,7 @@ static const char *colors[][3] = {
 };
 
 /* tagging */
-static const char *tags[] = {"", "", "", "󰓓", ""};
+static const char *tags[] = {" ", " ", " ", "󰓓 ", " "};
 
 static const Rule rules[] = {
     /* xprop(1):
