@@ -1,5 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-#include "/home/milo/suckless/dwm/themes/darkblue.h"
+#include "/home/milo/suckless/dwm/themes/mytheme.h"
 /* appearance */
 static const unsigned int borderpx = 2; /* border pixel of windows */
 static const unsigned int gappx = 2;    /* gaps between windows */
@@ -9,6 +9,7 @@ static const int topbar = 1;            /* 0 means bottom bar */
 static const char *fonts[] = {"LiberationMono BoldItalic:size=14"};
 static const char dmenufont[] = "LiberationMono  Bold:size=14";
 
+
 // #include "/home/milo/.cache/wal/colors-wal-dwm.h"
 static const char *colors[][3] = {
     /*               fg         bg         border   */
@@ -16,8 +17,10 @@ static const char *colors[][3] = {
     [SchemeSel] = {col_gray4, col_cyan, col_cyan},
 };
 
+
+
 /* tagging */
-static const char *tags[] = {" ", " ", " ", "󰓓 ", " "};
+static const char *tags[] = {" ", " ", " ", "󰓓 ", " "};
 
 static const Rule rules[] = {
     /* xprop(1):
@@ -25,8 +28,9 @@ static const Rule rules[] = {
      *	WM_NAME(STRING) = title
      */
     /* class      instance    title       tags mask     isfloating   monitor */
-    {"Gimp", NULL, NULL, 0, 1, -1},
-    {"Firefox", NULL, NULL, 1 << 8, 0, -1},
+    {"Brave",      NULL,      NULL,       1 << 0,           0,         -1},
+    {"kitty",      NULL,      NULL,       0,                0,         -1},
+    {"Spotify",    NULL,      NULL,       1 << 4,           0,         -1},
 };
 
 /* layout(s) */
@@ -49,6 +53,21 @@ static const Layout layouts[] = {
     {"[M]", monocle},
 };
 
+
+void cycletags(const Arg *arg) {
+    int direction = arg->i; // Get the direction from the argument
+    int i;
+    for (i = 0; i < LENGTH(tags); i++) {
+        if (selmon->tagset[selmon->seltags] & (1 << i)) {
+            int new_index = (i + direction + LENGTH(tags)) % LENGTH(tags);
+            view(&(Arg) { .ui = 1 << new_index });
+            return;
+        }
+    }
+}
+
+
+
 /* key definitions */
 #define MODKEY Mod4Mask
 #define TAGKEYS(KEY, TAG)                                                      \
@@ -67,8 +86,7 @@ static const Layout layouts[] = {
 static char dmenumon[2] =
     "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = {
-    "dmenu_run", "-m",      dmenumon, "-fn",    dmenufont, "-nb",     col_gray1,
-    "-nf",       col_gray3, "-sb",    col_cyan, "-sf",     col_gray4, NULL};
+    "dmenu_run", "-m",      dmenumon, "-fn",    dmenufont, "-nb" , NULL};
 static const char *termcmd[] = {"kitty", NULL};
 static const char *brave[] = {"brave", NULL};
 static const char *firefox[] = {"firefox", NULL};
@@ -104,6 +122,9 @@ static const Key keys[] = {
     {MODKEY | ShiftMask, XK_equal, setgaps, {.i = 0}},
     {MODKEY, XK_b, spawn, {.v = brave}},
     {MODKEY, XK_f, spawn, {.v = firefox}},
+    {MODKEY, XK_Left, cycletags, {.i = -1}},
+    {MODKEY, XK_Right, cycletags, {.i = +1}},
+
 
     TAGKEYS(XK_1, 0) TAGKEYS(XK_2, 1) TAGKEYS(XK_3, 2) TAGKEYS(XK_4, 3)
         TAGKEYS(XK_5, 4) TAGKEYS(XK_6, 5) TAGKEYS(XK_7, 6) TAGKEYS(XK_8, 7)
@@ -127,3 +148,5 @@ static const Button buttons[] = {
     {ClkTagBar, MODKEY, Button1, tag, {0}},
     {ClkTagBar, MODKEY, Button3, toggletag, {0}},
 };
+
+

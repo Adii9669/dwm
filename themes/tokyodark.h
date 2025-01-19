@@ -1,0 +1,12 @@
+static const char black[]       = "#11121D";
+static const char gray2[]       = "#1A1B2A";
+static const char gray3[]       = "#282A3A";
+static const char gray4[]       = "#4E5173";
+static const char white[]       = "#A0A8CD";
+static const char blue[]        = "#7199EE";
+static const char green[]       = "#95C561";
+static const char red[]         = "#EE6D85";
+static const char orange[]      = "#D7A65F";
+static const char yellow[]      = "#E7C664";
+static const char purple[]      = "#A485DD";
+static const char cyan[]        = "#38A89D"; 

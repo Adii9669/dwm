@@ -1,5 +1,42 @@
---- dwm.c
-+++ dwm.c
+From f58c7e4fd05ec13383518ccd51663167d45e92d0 Mon Sep 17 00:00:00 2001
+From: Daniel Bylinka <daniel.bylinka@gmail.com>
+Date: Fri, 2 Apr 2021 19:02:58 +0200
+Subject: [PATCH] [statuscmd] Signal mouse button and click location to status
+ monitor
+
+---
+ config.def.h |   6 +++-
+ dwm.c        | 100 ++++++++++++++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 100 insertions(+), 6 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 1c0b587..154a59b 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -54,6 +54,8 @@ static const Layout layouts[] = {
+ /* helper for spawning shell commands in the pre dwm-5.0 fashion */
+ #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+ 
++#define STATUSBAR "dwmblocks"
++
+ /* commands */
+ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
+ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+@@ -103,7 +105,9 @@ static Button buttons[] = {
+ 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
+ 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
+ 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
+-	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
++	{ ClkStatusText,        0,              Button1,        sigstatusbar,   {.i = 1} },
++	{ ClkStatusText,        0,              Button2,        sigstatusbar,   {.i = 2} },
++	{ ClkStatusText,        0,              Button3,        sigstatusbar,   {.i = 3} },
+ 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
+ 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
+ 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
+diff --git a/dwm.c b/dwm.c
+index b0b3466..d871457 100644
+--- a/dwm.c
++++ b/dwm.c
 @@ -172,6 +172,7 @@ static void focusstack(const Arg *arg);
  static Atom getatomprop(Client *c, Atom prop);
  static int getrootptr(int *x, int *y);
@@ -87,7 +124,59 @@
  	}
  
  	for (c = m->clients; c; c = c->next) {
-@@ -2028,8 +2101,25 @@ updatesizehints(Client *c)
+@@ -872,6 +907,30 @@ getatomprop(Client *c, Atom prop)
+ 	return atom;
+ }
+ 
++pid_t
++getstatusbarpid()
++{
++	char buf[32], *str = buf, *c;
++	FILE *fp;
++
++	if (statuspid > 0) {
++		snprintf(buf, sizeof(buf), "/proc/%u/cmdline", statuspid);
++		if ((fp = fopen(buf, "r"))) {
++			fgets(buf, sizeof(buf), fp);
++			while ((c = strchr(str, '/')))
++				str = c + 1;
++			fclose(fp);
++			if (!strcmp(str, STATUSBAR))
++				return statuspid;
++		}
++	}
++	if (!(fp = popen("pidof -s "STATUSBAR, "r")))
++		return -1;
++	fgets(buf, sizeof(buf), fp);
++	pclose(fp);
++	return strtol(buf, NULL, 10);
++}
++
+ int
+ getrootptr(int *x, int *y)
+ {
+@@ -1637,6 +1696,20 @@ sigchld(int unused)
+ 	while (0 < waitpid(-1, NULL, WNOHANG));
+ }
+ 
++void
++sigstatusbar(const Arg *arg)
++{
++	union sigval sv;
++
++	if (!statussig)
++		return;
++	sv.sival_int = arg->i;
++	if ((statuspid = getstatusbarpid()) <= 0)
++		return;
++
++	sigqueue(statuspid, SIGRTMIN+statussig, sv);
++}
++
+ void
+ spawn(const Arg *arg)
+ {
+@@ -1990,8 +2063,25 @@ updatesizehints(Client *c)
  void
  updatestatus(void)
  {
@@ -114,3 +203,6 @@
  	drawbar(selmon);
  }
  
+-- 
+2.31.0
+
