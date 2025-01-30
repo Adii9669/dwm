@@ -20,7 +20,7 @@ static const char *colors[][3] = {
 
 
 /* tagging */
-static const char *tags[] = {" ", " ", " ", "󰓓 ", " "};
+static const char *tags[] = {"  ", "  ", "  ", " 󰓓 ", "  "};
 
 static const Rule rules[] = {
     /* xprop(1):
@@ -54,7 +54,9 @@ static const Layout layouts[] = {
 };
 
 
-void cycletags(const Arg *arg) {
+/* Define cycletags as a static function */
+static void
+cycletags(const Arg *arg) {
     int direction = arg->i; // Get the direction from the argument
     int i;
     for (i = 0; i < LENGTH(tags); i++) {
@@ -70,17 +72,13 @@ void cycletags(const Arg *arg) {
 
 /* key definitions */
 #define MODKEY Mod4Mask
-#define TAGKEYS(KEY, TAG)                                                      \
-  {MODKEY, KEY, view, {.ui = 1 << TAG}},                                       \
-      {MODKEY | ControlMask, KEY, toggleview, {.ui = 1 << TAG}},               \
-      {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},                        \
-      {MODKEY | ControlMask | ShiftMask, KEY, toggletag, {.ui = 1 << TAG}},
-
+#define TAGKEYS(KEY, TAG) \
+    { MODKEY,                       KEY, view,           {.ui = 1 << TAG} }, \
+    { MODKEY|ControlMask,           KEY, toggleview,     {.ui = 1 << TAG} }, \
+    { MODKEY|ShiftMask,             KEY, tag,            {.ui = 1 << TAG} }, \
+    { MODKEY|ControlMask|ShiftMask, KEY, toggletag,      {.ui = 1 << TAG} },
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd)                                                             \
-  {                                                                            \
-    .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL }                       \
-  }
+#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
 static char dmenumon[2] =
@@ -95,7 +93,7 @@ static const char *firefox[] = {"firefox", NULL};
 static const Key keys[] = {
     /* modifier                     key        function        argument */
     {MODKEY, XK_p, spawn, {.v = dmenucmd}},
-    {MODKEY, XK_Return, spawn, {.v = termcmd}},
+    {MODKEY, XK_w, spawn, {.v = termcmd}},
     {MODKEY, XK_r, togglebar, {0}},
     {MODKEY, XK_j, focusstack, {.i = +1}},
     {MODKEY, XK_k, focusstack, {.i = -1}},
@@ -150,3 +148,6 @@ static const Button buttons[] = {
 };
 
 
+static const char *const autostart[] = {
+	"picom", "-b" "--animations", NULL,
+};
