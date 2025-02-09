@@ -9,15 +9,12 @@ static const int topbar = 1;            /* 0 means bottom bar */
 static const char *fonts[] = {"LiberationMono BoldItalic:size=14"};
 static const char dmenufont[] = "LiberationMono  Bold:size=14";
 
-
 // #include "/home/milo/.cache/wal/colors-wal-dwm.h"
 static const char *colors[][3] = {
-    /*               fg         bg         border   */
+    /*                 fg         bg         border   */
     [SchemeNorm] = {col_gray3, col_gray1, col_gray2},
     [SchemeSel] = {col_gray4, col_cyan, col_cyan},
 };
-
-
 
 /* tagging */
 static const char *tags[] = {"  ", "  ", "  ", " 󰓓 ", "  "};
@@ -28,63 +25,67 @@ static const Rule rules[] = {
      *	WM_NAME(STRING) = title
      */
     /* class      instance    title       tags mask     isfloating   monitor */
-    {"Brave",      NULL,      NULL,       1 << 0,           0,         -1},
-    {"kitty",      NULL,      NULL,       0,                0,         -1},
-    {"Spotify",    NULL,      NULL,       1 << 4,           0,         -1},
+    {"Brave", NULL, NULL, 0, 0, -1},
+    {"kitty", NULL, NULL, 0, 0, -1},
+    {"Spotify", NULL, NULL, 1 << 4, 0, -1},
 };
 
 /* layout(s) */
 static const float mfact = 0.55; /* factor of master area size [0.05..0.95] */
 static const int nmaster = 1;    /* number of clients in master area */
-static const int resizehints = 1; /* 1 means respect size hints in tiled resizals */
-static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
-
+static const int resizehints =
+    1; /* 1 means respect size hints in tiled resizals */
+static const int lockfullscreen =
+    1; /* 1 will force focus on the fullscreen window */
 
 static const int showsystray = 1;
-static const int systraypinning = 0; // 0: systray follows selected monitor, >0: pin systray to monitor X
-static const int systraypinningfailfirst =1; // 1: if pinning fails, display systray on the first monitor, 0: display
+static const int systraypinning =
+    0; // 0: systray follows selected monitor, >0: pin systray to monitor X
+static const int systraypinningfailfirst =
+    1; // 1: if pinning fails, display systray on the first monitor, 0: display
 static const int systrayspacing = 2; // spacing between systray icons
-static const int systrayonleft = 0; // 0: systray on the right, 1: systray on the left
+static const int systrayonleft =
+    0; // 0: systray on the right, 1: systray on the left
 
 static const Layout layouts[] = {
     /* symbol     arrange function */
     {"[]=", tile}, /* first entry is default */
     {"><>", NULL}, /* no layout function means floating behavior */
     {"[M]", monocle},
+    {"[D]", deck},
 };
 
-
 /* Define cycletags as a static function */
-static void
-cycletags(const Arg *arg) {
-    int direction = arg->i; // Get the direction from the argument
-    int i;
-    for (i = 0; i < LENGTH(tags); i++) {
-        if (selmon->tagset[selmon->seltags] & (1 << i)) {
-            int new_index = (i + direction + LENGTH(tags)) % LENGTH(tags);
-            view(&(Arg) { .ui = 1 << new_index });
-            return;
-        }
+static void cycletags(const Arg *arg) {
+  int direction = arg->i; // Get the direction from the argument
+  int i;
+  for (i = 0; i < LENGTH(tags); i++) {
+    if (selmon->tagset[selmon->seltags] & (1 << i)) {
+      int new_index = (i + direction + LENGTH(tags)) % LENGTH(tags);
+      view(&(Arg){.ui = 1 << new_index});
+      return;
     }
+  }
 }
-
-
 
 /* key definitions */
 #define MODKEY Mod4Mask
-#define TAGKEYS(KEY, TAG) \
-    { MODKEY,                       KEY, view,           {.ui = 1 << TAG} }, \
-    { MODKEY|ControlMask,           KEY, toggleview,     {.ui = 1 << TAG} }, \
-    { MODKEY|ShiftMask,             KEY, tag,            {.ui = 1 << TAG} }, \
-    { MODKEY|ControlMask|ShiftMask, KEY, toggletag,      {.ui = 1 << TAG} },
+#define TAGKEYS(KEY, TAG)                                                      \
+  {MODKEY, KEY, view, {.ui = 1 << TAG}},                                       \
+      {MODKEY | ControlMask, KEY, toggleview, {.ui = 1 << TAG}},               \
+      {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},                        \
+      {MODKEY | ControlMask | ShiftMask, KEY, toggletag, {.ui = 1 << TAG}},
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+#define SHCMD(cmd)                                                             \
+  {                                                                            \
+    .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL }                       \
+  }
 
 /* commands */
 static char dmenumon[2] =
     "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = {
-    "dmenu_run", "-m",      dmenumon, "-fn",    dmenufont, "-nb" , NULL};
+static const char *dmenucmd[] = {"dmenu_run", "-m",  dmenumon, "-fn",
+                                 dmenufont,   "-nb", NULL};
 static const char *termcmd[] = {"kitty", NULL};
 static const char *brave[] = {"brave", NULL};
 static const char *firefox[] = {"firefox", NULL};
@@ -105,6 +106,7 @@ static const Key keys[] = {
     {MODKEY, XK_Tab, view, {0}},
     {MODKEY, XK_q, killclient, {0}},
     {MODKEY, XK_t, setlayout, {.v = &layouts[0]}},
+    {MODKEY, XK_c, setlayout, {.v = &layouts[3]}},
     {MODKEY | ShiftMask, XK_f, setlayout, {.v = &layouts[1]}},
     {MODKEY, XK_m, setlayout, {.v = &layouts[2]}},
     {MODKEY, XK_space, setlayout, {0}},
@@ -122,7 +124,6 @@ static const Key keys[] = {
     {MODKEY, XK_f, spawn, {.v = firefox}},
     {MODKEY, XK_Left, cycletags, {.i = -1}},
     {MODKEY, XK_Right, cycletags, {.i = +1}},
-
 
     TAGKEYS(XK_1, 0) TAGKEYS(XK_2, 1) TAGKEYS(XK_3, 2) TAGKEYS(XK_4, 3)
         TAGKEYS(XK_5, 4) TAGKEYS(XK_6, 5) TAGKEYS(XK_7, 6) TAGKEYS(XK_8, 7)
@@ -147,7 +148,9 @@ static const Button buttons[] = {
     {ClkTagBar, MODKEY, Button3, toggletag, {0}},
 };
 
-
 static const char *const autostart[] = {
-	"picom", "-b" "--animations", NULL,
+    "picom",
+    "-b"
+    "--animations",
+    NULL,
 };
