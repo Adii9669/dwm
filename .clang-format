@@ -1,0 +1,38 @@
+BasedOnStyle: WebKit
+IndentWidth: 2
+UseTab: Never
+ColumnLimit: 120
+
+BreakBeforeBraces: Attach
+AllowShortIfStatementsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+
+SpacesBeforeTrailingComments: 1
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignTrailingComments: false
+
+KeepEmptyLinesAtTheStartOfBlocks: true
+MaxEmptyLinesToKeep: 10
+
+PenaltyBreakBeforeFirstCallParameter: 0
+PenaltyBreakComment: 0
+PenaltyExcessCharacter: 1000
+
+SortIncludes: false
+
+# KEY OPTION FOR YOU:
+AlwaysBreakAfterDefinitionReturnType: None
+BraceWrapping:
+  AfterEnum: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterFunction: false
+  BeforeElse: false
+  IndentBraces: false
+
+# Prevent clang-format from changing initializer spacing
+BinPackArguments: false
+BinPackParameters: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllArgumentsOnNextLine: false
