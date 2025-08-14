@@ -4,9 +4,9 @@
       { MODKEY | ControlMask | ShiftMask, KEY, toggletag, { .ui = 1 << TAG } },
 
 
+#include <X11/keysym.h>
 #include "fibonacci.c"
 #include <stddef.h>
-#include "selfrestart.c"
 /* Color schemes */
 #define SchemeNorm 0
 #define SchemeSel 1
@@ -29,15 +29,7 @@ static const char* colors[][3] = {
 };
 
 /* Tags */
-static const char* tags[] = { "  ", "  ", "󰓓 ", "  ", "  " };
-
-static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
-static const unsigned int systrayonleft = 0;    /* 0: systray in the right corner, >0: systray on left of status text */
-static const unsigned int systrayspacing = 2;   /* systray spacing */
-static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
-static const int showsystray        = 1;        /* 0 means no systray */
-
-
+static const char* tags[] = { "  ", "  ", " 󰓓", "  ", "  " };
 
 /* Rules */
 static const Rule rules[] = {
@@ -60,11 +52,11 @@ static const int systrayspacing          = 2;
 static const int systrayonleft           = 0;
 
 static const Layout layouts[] = {
+  { "[@]", spiral },
+  { "[D]", deck },
   { "[]=", tile },
   { "><>", NULL },
   { "[M]", monocle },
-  { "[D]", deck },
-  { "[@]", spiral },
   { "[\\]", dwindle },
 };
 
@@ -85,37 +77,33 @@ static const char* brave[]     = { "brave", NULL };
 static const char* firefox[]   = { "firefox", NULL };
 static const char* thunarcmd[] = { "Thunar" };
 
-#define MODKEY Mod4Mask // Super/Win key
+ #define MODKEY Mod4Mask // Super/Win key
 static const Key keys[] = {
   /* modifier            key        function        argument */
   { MODKEY, XK_r, togglebar, { 0 } },
 
-
-  // restart doesn't work after recomplie
-  { MODKEY | ShiftMask, XK_r, self_restart, { 0 } },
-  
-
   //travel and quit
   { MODKEY, XK_j, focusstack, { .i = +1 } },
   { MODKEY, XK_k, focusstack, { .i = -1 } },
-  { MODKEY, XK_i, incnmaster, { .i = +1 } },
-  { MODKEY, XK_d, incnmaster, { .i = -1 } },
+  { MODKEY, XK_g, incnmaster, { .i = +1 } },
+  { MODKEY, XK_v, incnmaster, { .i = -1 } },
+
+
+
   { MODKEY, XK_Tab, view, { 0 } },
   { MODKEY, XK_q, killclient, { 0 } },
 
 
 
   // layouts
-  { MODKEY, XK_t, setlayout, { .v = &layouts[0] } },
-  { MODKEY, XK_c, setlayout, { .v = &layouts[3] } },
-  { MODKEY | ShiftMask, XK_f, setlayout, { .v = &layouts[1] } },
-  { MODKEY, XK_m, setlayout, { .v = &layouts[2] } },
-  { MODKEY, XK_Return, setlayout, { 0 } },
-  { MODKEY | ShiftMask, XK_Return, togglefloating, { 0 } },
-  { MODKEY, XK_y, setlayout, { .v = &layouts[3] } },
-  { MODKEY | ShiftMask, XK_y, setlayout, { .v = &layouts[4] } },
-  { MODKEY, XK_space, zoom, { 0 } },
-
+  { MODKEY,             XK_y,              setlayout, { .v = &layouts[0] } }, // spiral again
+  { MODKEY|ShiftMask,   XK_d,              setlayout, { .v = &layouts[1] } }, // deck
+  { MODKEY,             XK_t,              setlayout, { .v = &layouts[2] } }, // tile
+  { MODKEY,             XK_c,              setlayout, { .v = &layouts[3] } }, // floating (NULL)
+  { MODKEY,             XK_m,              setlayout, { .v = &layouts[4] } }, // tile again
+  { MODKEY,             XK_x,              setlayout, { .v = &layouts[0] } }, // spiral again
+  { MODKEY,             XK_Return,         setlayout, { 0 } },                // default (last used)
+  { MODKEY,             XK_space,           zoom,      {0} },
 
   // view at one or last page
   { MODKEY, XK_0, view, { .ui = ~0 } },
@@ -157,8 +145,9 @@ static const Key keys[] = {
       TAGKEYS(XK_8, 1) TAGKEYS(XK_9, 0)
 
 
-
-          { MODKEY | ShiftMask, XK_q, quit, { 0 } },
+        //quit and refresh
+    { MODKEY|ShiftMask,        XK_q,      quit,          { 0 } },
+    { MODKEY|ShiftMask,        XK_w,      quit,          { 1 } }, 
 };
 
 

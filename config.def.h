@@ -1,12 +1,6 @@
-#define TAGKEYS(KEY, TAG)                                                                                              \
-  { MODKEY, KEY, view, { .ui = 1 << TAG } }, { MODKEY | ControlMask, KEY, toggleview, { .ui = 1 << TAG } },            \
-      { MODKEY | ShiftMask, KEY, tag, { .ui = 1 << TAG } },                                                            \
-      { MODKEY | ControlMask | ShiftMask, KEY, toggletag, { .ui = 1 << TAG } },
-
-
+#include <X11/keysym.h>
 #include "fibonacci.c"
 #include <stddef.h>
-#include "selfrestart.c"
 /* Color schemes */
 #define SchemeNorm 0
 #define SchemeSel 1
@@ -15,7 +9,6 @@
 
 /* Appearance */
 static const unsigned int borderpx    = 2;
-static const unsigned int gappx       = 2;
 static const unsigned int snap        = 55;
 static const int          showbar     = 1;
 static const int          topbar      = 1;
@@ -29,7 +22,7 @@ static const char* colors[][3] = {
 };
 
 /* Tags */
-static const char* tags[] = { "  ", "  ", " 󰓓", "  ", "  " };
+static const char* tags[] = { "  ", "  ", " 󰓓 ", "  ", "  " };
 
 /* Rules */
 static const Rule rules[] = {
@@ -53,10 +46,10 @@ static const int systrayonleft           = 0;
 
 static const Layout layouts[] = {
   { "[]=", tile },
+  { "[@]", spiral },
+  { "[D]", deck },
   { "><>", NULL },
   { "[M]", monocle },
-  { "[D]", deck },
-  { "[@]", spiral },
   { "[\\]", dwindle },
 };
 
@@ -77,37 +70,42 @@ static const char* brave[]     = { "brave", NULL };
 static const char* firefox[]   = { "firefox", NULL };
 static const char* thunarcmd[] = { "Thunar" };
 
-#define MODKEY Mod4Mask // Super/Win key
+
+
+#define TAGKEYS(KEY, TAG)                                                                                   \
+      { MODKEY,                        KEY,         view,           { .ui = 1 << TAG } },                   \
+      { MODKEY|ControlMask,            KEY,         toggleview,     { .ui = 1 << TAG } },                   \
+      { MODKEY|ShiftMask,              KEY,                 tag,    { .ui = 1 << TAG } },                   \
+      { MODKEY|ControlMask|ShiftMask,  KEY,         toggletag,      { .ui = 1 << TAG } },
+
+
+ #define MODKEY Mod4Mask // Super/Win key
 static const Key keys[] = {
   /* modifier            key        function        argument */
   { MODKEY, XK_r, togglebar, { 0 } },
 
-
-  // restart doesn't work after recomplie
-  { MODKEY | ShiftMask, XK_r, self_restart, { 0 } },
-  
-
   //travel and quit
   { MODKEY, XK_j, focusstack, { .i = +1 } },
   { MODKEY, XK_k, focusstack, { .i = -1 } },
-  { MODKEY, XK_i, incnmaster, { .i = +1 } },
-  { MODKEY, XK_d, incnmaster, { .i = -1 } },
+  { MODKEY, XK_d, incnmaster, { .i = +1 } },
+  { MODKEY, XK_x, incnmaster, { .i = -1 } },
+
+
+
   { MODKEY, XK_Tab, view, { 0 } },
   { MODKEY, XK_q, killclient, { 0 } },
 
 
 
   // layouts
-  { MODKEY, XK_t, setlayout, { .v = &layouts[0] } },
-  { MODKEY, XK_c, setlayout, { .v = &layouts[3] } },
-  { MODKEY | ShiftMask, XK_f, setlayout, { .v = &layouts[1] } },
-  { MODKEY, XK_m, setlayout, { .v = &layouts[2] } },
-  { MODKEY, XK_Return, setlayout, { 0 } },
-  { MODKEY | ShiftMask, XK_Return, togglefloating, { 0 } },
-  { MODKEY, XK_y, setlayout, { .v = &layouts[3] } },
-  { MODKEY | ShiftMask, XK_y, setlayout, { .v = &layouts[4] } },
-  { MODKEY, XK_space, zoom, { 0 } },
+  { MODKEY,             XK_y,              setlayout, { .v = &layouts[1] } }, // spiral again
+  { MODKEY|ShiftMask,   XK_y,              setlayout, { .v = &layouts[2] } }, // deck
+  { MODKEY,             XK_t,              setlayout, { .v = &layouts[0] } }, // tile
+  { MODKEY|ShiftMask,   XK_t,              setlayout, { .v = &layouts[3] } }, // floating (NULL)
+  { MODKEY,             XK_m,              setlayout, { .v = &layouts[4] } }, // monoloce
+  { MODKEY,             XK_Return,         setlayout, { 0 } },                // default (last used)
 
+  { MODKEY,             XK_space,         zoom , { 0 } },          //for switching       
 
   // view at one or last page
   { MODKEY, XK_0, view, { .ui = ~0 } },
@@ -119,10 +117,15 @@ static const Key keys[] = {
   { MODKEY, XK_period, focusmon, { .i = +1 } },
   { MODKEY | ShiftMask, XK_comma, tagmon, { .i = -1 } },
   { MODKEY | ShiftMask, XK_period, tagmon, { .i = +1 } },
+
+
+
   // gaps
   { MODKEY, XK_minus, setgaps, { .i = -1 } },
   { MODKEY, XK_equal, setgaps, { .i = +1 } },
   { MODKEY | ShiftMask, XK_equal, setgaps, { .i = 0 } },
+
+
   // applications
   { MODKEY, XK_p, spawn, { .v = dmenucmd } },
   { MODKEY, XK_w, spawn, { .v = termcmd } },
@@ -141,16 +144,14 @@ static const Key keys[] = {
   { MODKEY, XK_e, view, { .ui = 1 << 4 } },
 
   /* Tag keys */
-  // TAGKEYS(XK_1, 0) TAGKEYS(XK_2, 1) TAGKEYS(XK_3, 2)
-  // TAGKEYS(XK_4, 3) TAGKEYS(XK_5, 4) TAGKEYS(XK_6, 5)
-  // TAGKEYS(XK_7, 6) TAGKEYS(XK_8, 7) TAGKEYS(XK_9, 8)
-
-  TAGKEYS(XK_1, 8) TAGKEYS(XK_2, 7) TAGKEYS(XK_3, 6) TAGKEYS(XK_4, 5) TAGKEYS(XK_5, 4) TAGKEYS(XK_6, 3) TAGKEYS(XK_7, 2)
-      TAGKEYS(XK_8, 1) TAGKEYS(XK_9, 0)
+  TAGKEYS(XK_1, 0) TAGKEYS(XK_2, 1) TAGKEYS(XK_3, 2)
+  TAGKEYS(XK_4, 3) TAGKEYS(XK_5, 4) TAGKEYS(XK_6, 5)
+  TAGKEYS(XK_7, 6) TAGKEYS(XK_8, 7) TAGKEYS(XK_9, 8)
 
 
-
-          { MODKEY | ShiftMask, XK_q, quit, { 0 } },
+   //quit and refresh
+    { MODKEY|ShiftMask,        XK_q,      quit,          { 0 } },
+    { MODKEY|ShiftMask,        XK_w,      quit,          { 1 } }, 
 };
 
 
